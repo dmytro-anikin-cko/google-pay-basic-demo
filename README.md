@@ -11,6 +11,7 @@ A simple full-stack demo that integrates **Google Pay** with **Checkout.com** us
 
 ## 🗂 Project Structure
 
+```bash
 google-pay-basic-demo/
 ├── public/ # Frontend code
 │ ├── index.html # Google Pay button UI
@@ -20,6 +21,7 @@ google-pay-basic-demo/
 ├── .env # Secret API key (not committed)
 ├── package.json
 └── README.md
+```
 
 ---
 
@@ -62,11 +64,15 @@ npm start
  - Your .env file is ignored via .gitignore
  - CORS is not an issue since frontend and backend are served from the same domain
 
-📚 Resources
+---
+
+## 📚 Resources
 - [Google Pay API docs](https://developers.google.com/pay/api/web/guides/tutorial)
 - [Checkout.com Google Pay guide](https://www.checkout.com/docs/payments/add-payment-methods/google-pay)
 
-🛠 Requirements
+---
+
+## 🛠 Requirements
 Node.js ≥ 18 (to use the native "fetch"). Otherwise, use [node-fetch](https://www.npmjs.com/package/node-fetch):
 ```js
 const fetch = require("node-fetch");
