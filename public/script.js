@@ -182,11 +182,11 @@
    */
   function getGoogleTransactionInfo() {
     return {
-      countryCode: 'US',
-      currencyCode: 'USD',
+      countryCode: 'ES',
+      currencyCode: 'EUR',
       totalPriceStatus: 'FINAL',
       // set to cart total
-      totalPrice: '1.00'
+      totalPrice: '4.00'
     };
   }
   
@@ -238,13 +238,14 @@
     const paymentToken = JSON.parse(paymentData.paymentMethodData.tokenizationData.token);
 
     // show returned data in developer console for debugging
-    console.log(paymentToken);
+    console.log("Google's Token: ", paymentToken);
 
     /* 
         Get CKO token with the Google Pay payment data: https://www.checkout.com/docs/payments/add-payment-methods/google-pay#Step_2:_Tokenize_the_Google_Pay_payment_data
     */
     const { signature, protocolVersion, signedMessage } = paymentToken;
     let tokenResponse;
+
   
     try {
 
@@ -256,6 +257,8 @@
                 signedMessage,
             },
         }
+        console.log(JSON.stringify(reqBody));
+        
 
         const response = await fetch(`https://api.sandbox.checkout.com/tokens`, {
             method: "POST",
@@ -281,25 +284,13 @@
     const token = tokenResponse.token;
   
     try {
-
-      let paymentReq = {
-        source: {
-            type: "token",
-            token: token,
-          },
-          processing_channel_id: "pc_w2njpb6jbjjujgcz5dgzxdn5mm",
-          currency: "GBP",
-          amount: 400, // pence
-          reference: "GPAY-TEST",
-      }
         
-      const response = await fetch(`https://api.sandbox.checkout.com/payments`, {
+      const response = await fetch("/api/process-payment", {
         method: "POST",
         headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer sk_sbox_odyoauybjpcfbkzmgsnnbiub4mj`,
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify(paymentReq)
+        body: JSON.stringify({ token })
       });
 
       const payment = await response.json();
