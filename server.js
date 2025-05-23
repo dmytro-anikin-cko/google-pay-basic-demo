@@ -20,10 +20,15 @@ app.post("/api/process-payment", async (req, res) => {
         type: "token",
         token: token,
       },
+      "3ds": {
+        enabled: true,
+      },
       processing_channel_id: "pc_w2njpb6jbjjujgcz5dgzxdn5mm",
       currency: "EUR",
       amount: 400,
       reference: "GPAY-TEST",
+      success_url: "https://checkout.checkout.test.success",
+      failure_url: "https://checkout.checkout.test.failure",
     };
 
     const ckoRes = await fetch("https://api.sandbox.checkout.com/payments", {
@@ -36,7 +41,18 @@ app.post("/api/process-payment", async (req, res) => {
     });
 
     const result = await ckoRes.json();
-    res.status(200).json(result);
+
+    // Check if 3DS is required (status = Pending and _links.redirect exists)
+    if (ckoRes.status === 202 && result._links?.redirect?.href) {
+      return res.status(202).json({
+        redirect_url: result._links.redirect.href,
+        payment_id: result.id,
+        status: result.status,
+      });
+    }
+
+    // Otherwise, return the payment response as-is (200 Authorized, etc.)
+    return res.status(200).json(result);
   } catch (err) {
     console.error("Payment error:", err);
     res.status(500).json({ error: "Internal server error" });

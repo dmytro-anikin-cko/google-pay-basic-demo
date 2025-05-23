@@ -240,6 +240,8 @@
     // show returned data in developer console for debugging
     console.log("Google's Token: ", paymentToken);
 
+    // debugger;
+
     /* 
         Get CKO token with the Google Pay payment data: https://www.checkout.com/docs/payments/add-payment-methods/google-pay#Step_2:_Tokenize_the_Google_Pay_payment_data
     */
@@ -295,8 +297,17 @@
 
       const payment = await response.json();
 
-      console.log("Payment Successful:", payment);
-      alert("Payment Success!🎉")
+      if (response.status === 202 && payment.redirect_url) {
+        console.log("3DS Redirect required:", payment.redirect_url);
+        window.location.href = payment.redirect_url; // Redirect user to 3DS challenge
+      } else if (response.status === 200) {
+        console.log("✅ Payment Successful:", payment);
+        alert("Payment Success! 🎉");
+      } else {
+        console.error("⚠️ Unexpected status or missing redirect:", payment);
+        alert("Something went wrong! ❌");
+      }
+
     } catch (error) {
         console.error("Error on making payment", error)
         alert("Payment Fail!❌")
